@@ -39,4 +39,5 @@ def get_feature_table(service_url: str) -> str:
         return f"Error fetching table: {e}"
 
 if __name__ == "__main__":
+    print("Starting ArcGIS MCP server...")
     mcp.run(transport="stdio")
