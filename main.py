@@ -1,6 +1,7 @@
 
 import os
 from arcgis.gis import GIS
+from arcgis.features import FeatureLayer
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 
@@ -16,14 +17,14 @@ gis = GIS("https://www.arcgis.com", ARCGIS_USERNAME, ARCGIS_PASSWORD)
 
 @mcp.tool()
 def get_feature_table(service_url: str) -> str:
-    """Fetches the attribute table from an ArcGIS Online hosted feature layer.
+    """Fetches the attribute table from an ArcGIS Online hosted feature layer using the REST service URL.
     Args:
         service_url: The REST service URL of the feature layer.
     Returns:
         The attribute table as a string (CSV format) for LLM analysis.
     """
     try:
-        flayer = gis.content.get(service_url.split("/")[-3]).layers[0]
+        flayer = FeatureLayer(service_url, gis=gis)
         features = flayer.query(where="1=1", out_fields="*", return_geometry=False)
         if not features.features:
             return "No features found."
