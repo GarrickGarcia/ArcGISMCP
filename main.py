@@ -16,6 +16,39 @@ ARCGIS_PASSWORD = os.getenv("ARCGIS_PASSWORD")
 gis = GIS("https://www.arcgis.com", ARCGIS_USERNAME, ARCGIS_PASSWORD)
 
 @mcp.tool()
+def search_layers(keyword: str) -> str:
+    """Searches ArcGIS Online for layers and sublayers matching a keyword and returns their REST URLs.
+    Args:
+        keyword: The keyword or description to search for (e.g., 'Hydrants').
+    Returns:
+        A list of matching layer names and their REST URLs as a string.
+    """
+    try:
+        matches = []
+
+        # IMPORTANT: item_type must be a *string*
+        items = gis.content.search(
+            query=keyword,
+            item_type="Feature Layer",
+            max_items=20
+        )
+
+        for item in items:
+            # Feature Layer collections often contain multiple layers
+            if getattr(item, "layers", None):
+                for lyr in item.layers:
+                    name = lyr.properties.name
+                    if keyword.lower() in name.lower():
+                        matches.append(f"{name}: {lyr.url}")
+            # Single-layer items fall through here
+            elif item.url and keyword.lower() in (item.title or "").lower():
+                matches.append(f"{item.title}: {item.url}")
+
+        return "\n".join(matches) if matches else "No matching layers found."
+    except Exception as exc:
+        return f"Error searching layers: {exc}"
+
+@mcp.tool()
 def get_feature_table(service_url: str) -> str:
     """Fetches the attribute table from an ArcGIS Online hosted feature layer using the REST service URL.
     Args:
