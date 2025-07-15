@@ -103,49 +103,6 @@ def search_content(keyword: str, item_type: str = None) -> str:
     except Exception as exc:
         return f"Error searching content: {exc}"
 
-@mcp.tool()
-def get_item_definition(item_id: str) -> str:
-    """Fetches the JSON definition of an ArcGIS Online content item using its Item ID.
-    Args:
-        item_id: The Item ID of the content item from search_content results.
-    Returns:
-        Item metadata header plus the complete JSON definition as a compact string.
-    """
-    try:
-        # Get the item
-        item = gis.content.get(item_id)
-        if not item:
-            return f"Error: Item with ID '{item_id}' not found or not accessible."
-        
-        # Get basic item info
-        title = item.title or "Untitled"
-        item_type = item.type or "Unknown"
-        created = item.created or "Unknown"
-        
-        # Get JSON definition based on item type
-        if item_type in ["Feature Service", "Feature Layer"]:
-            # For feature services, get the service definition
-            if hasattr(item, 'url') and item.url:
-                flayer = FeatureLayer(item.url)
-                definition = flayer.properties
-            else:
-                definition = item.get_data()
-        else:
-            # For web maps, dashboards, apps, etc.
-            definition = item.get_data()
-        
-        if definition is None:
-            return f"Item: {title} | Type: {item_type} | Created: {created}\nNo JSON definition available for this item type."
-        
-        # Format as compact JSON
-        json_str = json.dumps(definition, separators=(',', ':'))
-        
-        # Return with header
-        header = f"Item: {title} | Type: {item_type} | Created: {created}"
-        return f"{header}\n{json_str}"
-        
-    except Exception as exc:
-        return f"Error fetching item definition: {exc}"
 
 
 if __name__ == "__main__":
