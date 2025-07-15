@@ -64,21 +64,6 @@ OBJECTID,Name,Type,Status,Install_Date
 2,Hydrant_002,Fire Hydrant,Maintenance,2019-08-22
 ```
 
-### `get_item_definition`
-Retrieves the complete JSON definition of any ArcGIS Online content item using its Item ID.
-
-**Parameters:**
-- `item_id` (string): The Item ID of the content item from search_content results
-
-**Returns:**
-Item metadata header followed by the complete JSON definition in compact format.
-
-**Example:**
-```
-Item: Traffic Dashboard | Type: Dashboard | Created: 1609459200000
-{"widgets":[{"type":"indicator","config":{"dataSource":"layer1"}}],"theme":"dark"}
-```
-
 
 ## Setup
 
@@ -114,10 +99,9 @@ The server is built using the FastMCP framework and leverages the ArcGIS Python 
 
 ## Workflows
 
-### Content Discovery and Analysis
-1. **Search for content**: Use `search_content` to find items by keyword
-2. **Get JSON definitions**: Use `get_item_definition` with Item IDs to analyze service configurations, web map structures, or dashboard layouts
-3. **Extract data**: For feature layers, use `search_layers` to find specific layers, then `get_feature_table` to retrieve attribute data
+### Content Discovery
+1. **Search for content**: Use `search_content` to find items by keyword and type
+2. **Extract data**: For feature layers, use `search_layers` to find specific layers, then `get_feature_table` to retrieve attribute data
 
 ### Layer-Specific Data Extraction
 1. **Find layers**: Use `search_layers` to locate specific feature layers
@@ -127,8 +111,6 @@ The server is built using the FastMCP framework and leverages the ArcGIS Python 
 ## Use Cases
 
 - **Data Discovery**: Find relevant geospatial datasets and applications using natural language queries
-- **Configuration Analysis**: Examine JSON definitions of web maps, dashboards, and services to understand their structure
 - **Spatial Analysis**: Extract attribute data for AI-powered analysis and insights
 - **Report Generation**: Automatically gather data from multiple feature layers for comprehensive reports
-- **Quality Assurance**: Programmatically inspect feature layer contents, metadata, and service configurations
-- **Application Development**: Understand web map and dashboard configurations for building similar applications
+- **Quality Assurance**: Programmatically inspect feature layer contents and service configurations

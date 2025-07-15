@@ -4,13 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an MCP (Model Context Protocol) server for ArcGIS that provides tools for searching, querying, and recreating ArcGIS Online content. The server authenticates with ArcGIS Online and exposes five main tools:
+This is an MCP (Model Context Protocol) server for ArcGIS that provides tools for searching and querying ArcGIS Online content. The server authenticates with ArcGIS Online and exposes three main tools:
 
 1. `search_layers` - Searches for feature layers by keyword, returns REST URLs
 2. `search_content` - Searches for any content type by keyword, returns Item IDs  
 3. `get_feature_table` - Retrieves attribute data from feature layers as CSV
-4. `get_item_definition` - Retrieves JSON definitions from any content item using Item ID
-5. `recreate_item` - Creates new items from JSON definitions obtained from get_item_definition
 
 ## Architecture
 
@@ -38,10 +36,9 @@ The server requires ArcGIS Online credentials in a `.env` file:
 
 ## Workflows
 
-**Three main workflow patterns:**
+**Main workflow patterns:**
 - `search_layers` → `get_feature_table` (for layer-specific data extraction)
-- `search_content` → `get_item_definition` (for JSON definition analysis)
-- `search_content` → `get_item_definition` → `recreate_item` (for item duplication/recreation)
+- `search_content` → find specific content items by keyword and type
 
 ## Key Implementation Details
 
@@ -50,13 +47,4 @@ The server requires ArcGIS Online credentials in a `.env` file:
 - Multi-layer feature services are handled by iterating through item.layers
 - Content searches can filter by item_type or search all types
 - CSV output excludes geometry for LLM consumption
-- JSON definitions are returned in compact format for efficient LLM processing
-- Different item types require different JSON extraction methods:
-  - Feature Services: Use FeatureLayer(url).properties
-  - Web Maps/Dashboards/Apps: Use item.get_data()
-- Item recreation uses type-specific creation methods:
-  - Web Maps: WebMap(definition).save() with item_properties
-  - Dashboards/Apps: gis.content.add() with text parameter containing JSON
-  - Feature Services: gis.content.create_service() with service_definition
-- The recreate_item tool parses header format: "Item: Title | Type: TYPE | Created: DATE"
 - Error handling returns descriptive error messages as strings
