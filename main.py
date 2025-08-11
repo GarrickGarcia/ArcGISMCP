@@ -52,15 +52,15 @@ def search_layers(keyword: str) -> str:
 
 @mcp.tool()
 def get_feature_table(service_url: str) -> str:
-    """Fetches the attribute table from an ArcGIS Online hosted feature layer using the REST service URL.
+    """Fetches a sample of the attribute table from an ArcGIS Online hosted feature layer using the REST service URL.
     Args:
         service_url: The REST service URL of the feature layer.
     Returns:
-        The attribute table as a string (CSV format) for LLM analysis.
+        The first 20 rows of the attribute table as a string (CSV format) for LLM analysis. Note: This is a sample, not the complete table.
     """
     try:
         flayer = FeatureLayer(service_url, gis=gis)
-        features = flayer.query(where="1=1", out_fields="*", return_geometry=False)
+        features = flayer.query(where="1=1", out_fields="*", return_geometry=False, result_record_count=20)
         if not features.features:
             return "No features found."
         # Convert to CSV string
