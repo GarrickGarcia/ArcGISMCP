@@ -31,6 +31,37 @@ Fire Hydrants: https://services.arcgis.com/.../FeatureServer/0
 Water Distribution System: https://services.arcgis.com/.../FeatureServer/1
 ```
 
+**Workflow Tip:** Use this tool first to discover feature layers, then chain the returned URLs to other tools.
+
+### `summarize_field`
+Provides comprehensive statistics for a specific field in an ArcGIS feature layer.
+
+**Parameters:**
+- `service_url` (string): The REST service URL of the feature layer (obtained from `search_layers`)
+- `field_name` (string): The name of the field to analyze (obtained from `get_feature_table`)
+
+**Returns:**
+Field-type-appropriate statistics including:
+- **All types**: Total count, null percentage, unique values, top 10 most common values with frequencies
+- **Numeric fields**: Min, max, mean, median, mode, standard deviation
+- **Date fields**: Earliest, latest dates, and date range
+
+**Example:**
+```
+Field: Status
+Type: esriFieldTypeString
+Total features: 150
+Null values: 5 (3.3%)
+Unique values: 3
+
+Top 10 values:
+  'Active': 120 (82.8%)
+  'Maintenance': 20 (13.8%)
+  'Inactive': 5 (3.4%)
+```
+
+**Workflow Tip:** Complete workflow: `search_layers` → `get_feature_table` (to see fields) → `summarize_field` (to analyze).
+
 ### `search_content`
 Searches ArcGIS Online for content items of any type and returns their Item IDs.
 
@@ -49,13 +80,13 @@ Transportation Network: def456ghi789 | Type: Feature Service
 ```
 
 ### `get_feature_table`
-Retrieves the complete attribute table from a specified feature layer using REST service URLs.
+Retrieves a sample (first 20 rows) of the attribute table from a specified feature layer using REST service URLs.
 
 **Parameters:**
-- `service_url` (string): The REST service URL of the target feature layer
+- `service_url` (string): The REST service URL of the target feature layer (obtained from `search_layers`)
 
 **Returns:**
-Attribute data in CSV format with all fields and records, excluding geometry for efficient processing.
+First 20 rows of attribute data in CSV format, excluding geometry for efficient processing. Note: This is a sample, not the complete table.
 
 **Example:**
 ```csv
@@ -63,6 +94,8 @@ OBJECTID,Name,Type,Status,Install_Date
 1,Hydrant_001,Fire Hydrant,Active,2020-01-15
 2,Hydrant_002,Fire Hydrant,Maintenance,2019-08-22
 ```
+
+**Workflow Tip:** Use after `search_layers` to preview data structure and identify field names for further analysis.
 
 
 ## Setup
@@ -100,12 +133,13 @@ The server is built using the FastMCP framework and leverages the ArcGIS Python 
 ## Workflows
 
 ### Content Discovery
-1. **Search for content**: Use `search_content` to find items by keyword and type
-2. **Extract data**: For feature layers, use `search_layers` to find specific layers, then `get_feature_table` to retrieve attribute data
+1. **Search for content**: Use `search_content` to find items by keyword and type (Web Maps, Dashboards, etc.)
+2. **For feature layer analysis**: Use `search_layers` instead to find specific layers for data extraction
 
-### Layer-Specific Data Extraction
-1. **Find layers**: Use `search_layers` to locate specific feature layers
-2. **Extract data**: Use `get_feature_table` with REST URLs to get attribute tables as CSV
+### Layer-Specific Data Analysis (Recommended Workflow)
+1. **Find layers**: Use `search_layers` to locate specific feature layers by keyword
+2. **Preview data**: Use `get_feature_table` with REST URLs to see field names and sample data (20 rows)
+3. **Analyze fields**: Use `summarize_field` to get detailed statistics for specific fields of interest
 
 
 ## Use Cases
